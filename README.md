@@ -24,3 +24,10 @@ This library parses only those structural fields and stops there. It does not at
 ## Edge cases
 
 The TAG field is the program name, optionally followed by `[pid]` before a colon. When the colon is absent or the TAG doesn't match the expected pattern, the library sets tag to an empty string and treats the entire remainder as the message, rather than guessing. Single-digit days in the timestamp ("Oct  1") are preserved as-is; the timestamp is returned verbatim, not converted to a `datetime`, because RFC 3164 timestamps carry no year or timezone and any conversion would impose an assumption the datagram does not support.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
